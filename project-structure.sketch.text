@@ -1,0 +1,83 @@
+Observation OS / Bless project structure
+
+Root
+- .editorconfig
+- .gitignore
+- .prettierrc.json
+- README.md
+- eslint.config.js
+- index.html
+- jsconfig.json
+- netlify.toml
+- package-lock.json
+- package.json
+- pnpm-workspace.yaml
+- postcss.config.js
+- quasar.config.js
+- sketch.text
+
+Generated / local
+- .quasar/
+- dist/
+- node_modules/
+
+Public assets
+- public/favicon.ico
+- public/icons/favicon-16x16.png
+- public/icons/favicon-32x32.png
+- public/icons/favicon-96x96.png
+- public/icons/favicon-128x128.png
+
+Source
+- src/App.vue
+
+Source / assets
+- src/assets/quasar-logo-vertical.svg
+
+Source / boot
+- src/boot/.gitkeep
+- src/boot/i18n.js
+
+Source / components
+- src/components/EssentialLink.vue
+
+Source / composables
+- src/composables/useNotebookWorkspace.js
+- src/composables/useSimulation.js
+
+Source / css
+- src/css/app.scss
+- src/css/quasar.variables.scss
+
+Source / data
+- src/data/terminalData.js
+
+Source / i18n
+- src/i18n/index.js
+- src/i18n/en-US/index.js
+
+Source / layouts
+- src/layouts/MainLayout.vue
+
+Source / pages
+- src/pages/ErrorNotFound.vue
+- src/pages/IndexPage.vue
+
+Source / router
+- src/router/index.js
+- src/router/routes.js
+
+Source / stores
+- src/stores/index.js
+- src/stores/example-store.js
+
+Current architecture notes
+- IndexPage.vue owns the visible notebook/library layout.
+- useNotebookWorkspace.js owns notebook state, engineering library data, selections, computed lookups, new-entry creation, and terminal commands.
+- app.scss owns the notebook, library panel, machine rail, and terminal dock styling.
+- MainLayout.vue provides the Quasar shell around the page.
+
+Deployment notes
+- Quasar build command: npm run build
+- Static output: dist/spa
+- Netlify publish directory: dist/spa

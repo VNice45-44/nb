@@ -1,0 +1,46 @@
+Great. We will then henceforth creat a new sketch file with the file structure of the entire project here. 
+Additionally, i like the clean-up. the files are well arranged now. If we go to Netlify and host it.
+It will be a good start. Then, we now just have the frontend. Which means we'd need to connect to Supabase 
+then. So we have a flow of Netlify first?hosting first? then Supabase after?
+or what do we do? So that we can implement the backend fully.
+
+The frontend looks done, basically. We innovate at the back now.
+Would this sound like a good plan? we also need to upload to github hence? yes. Would be great we fast track issues.
+
+
+
+
+
+Sorry. Let's continue. we can do something at auth. 
+instead of password login, we just require email login to acess the site. or phone number login. 
+or someone sends me a request email. it's us at the end of the day? we wont dwell much on that. 
+we're not having many users. Just i and maybe a couple or multiple versions of I, 
+and maybe very few people. if everything is clear, hence get to github, make the uploads. 
+I creat a new Organization in Supabase or something? in the meantime. I'll setup supabase, you do github and netlify. 
+Cause that was smooth last time.
+
+
+
+
+The local repo has no configured remote, and this environment does not have gh 
+or netlify CLI installed/authenticated. 
+I can still prepare it properly: add Netlify config, verify the build, 
+and make a clean local commit so you can push once you create/connect the GitHub repo.
+
+I’m going to add a small netlify.toml now. Even if we connect through the Netlify dashboard, 
+this keeps the build settings in the repo and makes deploys less dependent on memory.
+
+
+
+
+
+The router is currently hash-mode, so Netlify does not need SPA redirects yet. 
+I’ll still commit the build/publish settings in netlify.toml, 
+and later if we switch to history-mode we can add redirects.
+
+
+
+
+
+I added the Netlify config. I’ll update the project-structure sketch to include it, 
+then run build and make a local commit if Git is configured.

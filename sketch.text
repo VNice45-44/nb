@@ -44,3 +44,18 @@ and later if we switch to history-mode we can add redirects.
 
 I added the Netlify config. I’ll update the project-structure sketch to include it, 
 then run build and make a local commit if Git is configured.
+
+GY72HBH192H
+
+
+
+
+https://slkattgglxhmbvaftvze.supabase.co
+
+sb_publishable_hWJeaz_-BHDlGNxfnDzusA_-Fz5eBjv
+
+postgresql://postgres:[YOUR-PASSWORD]@db.slkattgglxhmbvaftvze.supabase.co:5432/postgres
+
+supabase login
+supabase init
+supabase link --project-ref slkattgglxhmbvaftvze

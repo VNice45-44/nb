@@ -1,61 +1,2284 @@
-Great. We will then henceforth creat a new sketch file with the file structure of the entire project here. 
-Additionally, i like the clean-up. the files are well arranged now. If we go to Netlify and host it.
-It will be a good start. Then, we now just have the frontend. Which means we'd need to connect to Supabase 
-then. So we have a flow of Netlify first?hosting first? then Supabase after?
-or what do we do? So that we can implement the backend fully.
+1) Raw column definitions (includes exact types/defaults/identity/etc.)
+[
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 2,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 3,
+    "column_name": "test_session_event_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 4,
+    "column_name": "asset_kind",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'file'::text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 5,
+    "column_name": "title",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 6,
+    "column_name": "description",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 7,
+    "column_name": "storage_bucket",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 8,
+    "column_name": "storage_object_path",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 9,
+    "column_name": "mime_type",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 10,
+    "column_name": "metadata",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 11,
+    "column_name": "provenance_kind",
+    "is_nullable": "NO",
+    "data_type": "USER-DEFINED",
+    "udt_name": "provenance_kind",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'other'::provenance_kind"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 12,
+    "column_name": "provenance_ref",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 13,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "ordinal_position": 14,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 2,
+    "column_name": "entry_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 3,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 4,
+    "column_name": "icon",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 5,
+    "column_name": "display_type",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 6,
+    "column_name": "content",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 7,
+    "column_name": "sections",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 8,
+    "column_name": "sort_order",
+    "is_nullable": "NO",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "datetime_precision": null,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 9,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "ordinal_position": 10,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 2,
+    "column_name": "topic_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 3,
+    "column_name": "slug",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 4,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 5,
+    "column_name": "summary",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 6,
+    "column_name": "ui",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 7,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "ordinal_position": 8,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 2,
+    "column_name": "slug",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 3,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 4,
+    "column_name": "icon",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 5,
+    "column_name": "sort_order",
+    "is_nullable": "NO",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "datetime_precision": null,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 6,
+    "column_name": "ui",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 7,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_topics",
+    "ordinal_position": 8,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 2,
+    "column_name": "machine_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 3,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 4,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 5,
+    "column_name": "icon",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 6,
+    "column_name": "display_type",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 7,
+    "column_name": "content",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 8,
+    "column_name": "sections",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 9,
+    "column_name": "sort_order",
+    "is_nullable": "NO",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "datetime_precision": null,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 10,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "ordinal_position": 11,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 2,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 3,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 4,
+    "column_name": "description",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 5,
+    "column_name": "status",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'active'::text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 6,
+    "column_name": "workspace_mode",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'notebook'::text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 7,
+    "column_name": "library_refs",
+    "is_nullable": "NO",
+    "data_type": "ARRAY",
+    "udt_name": "_text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::text[]"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 8,
+    "column_name": "ui",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 9,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "ordinal_position": 10,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 2,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 3,
+    "column_name": "test_session_event_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 4,
+    "column_name": "measured_at",
+    "is_nullable": "YES",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 5,
+    "column_name": "measurement_kind",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 6,
+    "column_name": "value",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 7,
+    "column_name": "units",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 8,
+    "column_name": "metadata",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 9,
+    "column_name": "provenance_kind",
+    "is_nullable": "NO",
+    "data_type": "USER-DEFINED",
+    "udt_name": "provenance_kind",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'other'::provenance_kind"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 10,
+    "column_name": "provenance_ref",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 11,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "ordinal_position": 12,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "ordinal_position": 2,
+    "column_name": "email",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "ordinal_position": 3,
+    "column_name": "display_name",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "ordinal_position": 4,
+    "column_name": "is_admin",
+    "is_nullable": "NO",
+    "data_type": "boolean",
+    "udt_name": "bool",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "false"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "ordinal_position": 5,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "profiles",
+    "ordinal_position": 6,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 2,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 3,
+    "column_name": "machine_id",
+    "is_nullable": "YES",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 4,
+    "column_name": "action_type",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'console'::text"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 5,
+    "column_name": "message",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 6,
+    "column_name": "payload",
+    "is_nullable": "NO",
+    "data_type": "jsonb",
+    "udt_name": "jsonb",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "'{}'::jsonb"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "ordinal_position": 7,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 2,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 3,
+    "column_name": "test_session_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 4,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 5,
+    "column_name": "description",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 6,
+    "column_name": "sort_order",
+    "is_nullable": "NO",
+    "data_type": "integer",
+    "udt_name": "int4",
+    "character_maximum_length": null,
+    "numeric_precision": 32,
+    "numeric_scale": 0,
+    "datetime_precision": null,
+    "column_default": "0"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 7,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "ordinal_position": 8,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 1,
+    "column_name": "id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": "uuid_generate_v4()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 2,
+    "column_name": "owner_id",
+    "is_nullable": "NO",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 3,
+    "column_name": "machine_id",
+    "is_nullable": "YES",
+    "data_type": "uuid",
+    "udt_name": "uuid",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 4,
+    "column_name": "title",
+    "is_nullable": "NO",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 5,
+    "column_name": "description",
+    "is_nullable": "YES",
+    "data_type": "text",
+    "udt_name": "text",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": null,
+    "column_default": null
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 6,
+    "column_name": "created_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "ordinal_position": 7,
+    "column_name": "updated_at",
+    "is_nullable": "NO",
+    "data_type": "timestamp with time zone",
+    "udt_name": "timestamptz",
+    "character_maximum_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "datetime_precision": 6,
+    "column_default": "now()"
+  }
+]
 
-The frontend looks done, basically. We innovate at the back now.
-Would this sound like a good plan? we also need to upload to github hence? yes. Would be great we fast track issues.
 
 
 
 
 
-Sorry. Let's continue. we can do something at auth. 
-instead of password login, we just require email login to acess the site. or phone number login. 
-or someone sends me a request email. it's us at the end of the day? we wont dwell much on that. 
-we're not having many users. Just i and maybe a couple or multiple versions of I, 
-and maybe very few people. if everything is clear, hence get to github, make the uploads. 
-I creat a new Organization in Supabase or something? in the meantime. I'll setup supabase, you do github and netlify. 
-Cause that was smooth last time.
-
-
-
-
-The local repo has no configured remote, and this environment does not have gh 
-or netlify CLI installed/authenticated. 
-I can still prepare it properly: add Netlify config, verify the build, 
-and make a clean local commit so you can push once you create/connect the GitHub repo.
-
-I’m going to add a small netlify.toml now. Even if we connect through the Netlify dashboard, 
-this keeps the build settings in the repo and makes deploys less dependent on memory.
 
 
 
 
 
-The router is currently hash-mode, so Netlify does not need SPA redirects yet. 
-I’ll still commit the build/publish settings in netlify.toml, 
-and later if we switch to history-mode we can add redirects.
 
 
 
 
 
-I added the Netlify config. I’ll update the project-structure sketch to include it, 
-then run build and make a local commit if Git is configured.
-
-GY72HBH192H
 
 
 
 
-https://slkattgglxhmbvaftvze.supabase.co
 
-sb_publishable_hWJeaz_-BHDlGNxfnDzusA_-Fz5eBjv
 
-postgresql://postgres:[YOUR-PASSWORD]@db.slkattgglxhmbvaftvze.supabase.co:5432/postgres
 
-supabase login
-supabase init
-supabase link --project-ref slkattgglxhmbvaftvze
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2) Foreign key constraints (FKs)
+[
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "constraint_name": "assets_event_id_fkey",
+    "fk_column": "test_session_event_id",
+    "referenced_table": "test_session_events",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "assets",
+    "constraint_name": "assets_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "entry_sections",
+    "constraint_name": "entry_sections_entry_id_fkey",
+    "fk_column": "entry_id",
+    "referenced_table": "library_entries",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "library_entries",
+    "constraint_name": "library_entries_topic_id_fkey",
+    "fk_column": "topic_id",
+    "referenced_table": "library_topics",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_machine_id_fkey",
+    "fk_column": "machine_id",
+    "referenced_table": "machines",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "machines",
+    "constraint_name": "machines_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "constraint_name": "measurements_event_id_fkey",
+    "fk_column": "test_session_event_id",
+    "referenced_table": "test_session_events",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "measurements",
+    "constraint_name": "measurements_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "constraint_name": "terminal_logs_machine_id_fkey",
+    "fk_column": "machine_id",
+    "referenced_table": "machines",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "terminal_logs",
+    "constraint_name": "terminal_logs_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "constraint_name": "test_session_events_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_session_events",
+    "constraint_name": "test_session_events_test_session_id_fkey",
+    "fk_column": "test_session_id",
+    "referenced_table": "test_sessions",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "constraint_name": "test_sessions_machine_id_fkey",
+    "fk_column": "machine_id",
+    "referenced_table": "machines",
+    "referenced_column": "id"
+  },
+  {
+    "table_schema": "public",
+    "table_name": "test_sessions",
+    "constraint_name": "test_sessions_owner_id_fkey",
+    "fk_column": "owner_id",
+    "referenced_table": "profiles",
+    "referenced_column": "id"
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3) Triggers (name + definition)
+[
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_assets",
+    "table_name": "assets",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_assets BEFORE UPDATE ON public.assets FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_entry_sections",
+    "table_name": "entry_sections",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_entry_sections BEFORE UPDATE ON public.entry_sections FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_library_entries",
+    "table_name": "library_entries",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_library_entries BEFORE UPDATE ON public.library_entries FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_library_topics",
+    "table_name": "library_topics",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_library_topics BEFORE UPDATE ON public.library_topics FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_machine_sections",
+    "table_name": "machine_sections",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_machine_sections BEFORE UPDATE ON public.machine_sections FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "trg_enforce_machine_sections_owner",
+    "table_name": "machine_sections",
+    "trigger_definition": "CREATE TRIGGER trg_enforce_machine_sections_owner BEFORE INSERT OR UPDATE ON public.machine_sections FOR EACH ROW EXECUTE FUNCTION enforce_machine_sections_owner()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_machines",
+    "table_name": "machines",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_machines BEFORE UPDATE ON public.machines FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_measurements",
+    "table_name": "measurements",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_measurements BEFORE UPDATE ON public.measurements FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_profiles",
+    "table_name": "profiles",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_profiles BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_test_session_events",
+    "table_name": "test_session_events",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_test_session_events BEFORE UPDATE ON public.test_session_events FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  },
+  {
+    "schema_name": "public",
+    "trigger_name": "set_updated_at_test_sessions",
+    "table_name": "test_sessions",
+    "trigger_definition": "CREATE TRIGGER set_updated_at_test_sessions BEFORE UPDATE ON public.test_sessions FOR EACH ROW EXECUTE FUNCTION set_updated_at()"
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4) Indexes (name + definition + columns)
+[
+  {
+    "schemaname": "public",
+    "tablename": "assets",
+    "indexname": "assets_owner_id_idx",
+    "indexdef": "CREATE INDEX assets_owner_id_idx ON public.assets USING btree (owner_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "assets",
+    "indexname": "assets_pkey",
+    "indexdef": "CREATE UNIQUE INDEX assets_pkey ON public.assets USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "assets",
+    "indexname": "assets_test_session_event_id_idx",
+    "indexdef": "CREATE INDEX assets_test_session_event_id_idx ON public.assets USING btree (test_session_event_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "entry_sections",
+    "indexname": "entry_sections_pkey",
+    "indexdef": "CREATE UNIQUE INDEX entry_sections_pkey ON public.entry_sections USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "entry_sections",
+    "indexname": "entry_sections_unique_title_per_entry",
+    "indexdef": "CREATE UNIQUE INDEX entry_sections_unique_title_per_entry ON public.entry_sections USING btree (entry_id, title)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "entry_sections",
+    "indexname": "idx_entry_sections_entry_id",
+    "indexdef": "CREATE INDEX idx_entry_sections_entry_id ON public.entry_sections USING btree (entry_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "library_entries",
+    "indexname": "idx_library_entries_topic_id",
+    "indexdef": "CREATE INDEX idx_library_entries_topic_id ON public.library_entries USING btree (topic_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "library_entries",
+    "indexname": "library_entries_pkey",
+    "indexdef": "CREATE UNIQUE INDEX library_entries_pkey ON public.library_entries USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "library_entries",
+    "indexname": "library_entries_slug_key",
+    "indexdef": "CREATE UNIQUE INDEX library_entries_slug_key ON public.library_entries USING btree (slug)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "library_topics",
+    "indexname": "library_topics_pkey",
+    "indexdef": "CREATE UNIQUE INDEX library_topics_pkey ON public.library_topics USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "library_topics",
+    "indexname": "library_topics_slug_key",
+    "indexdef": "CREATE UNIQUE INDEX library_topics_slug_key ON public.library_topics USING btree (slug)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machine_sections",
+    "indexname": "idx_machine_sections_machine_id",
+    "indexdef": "CREATE INDEX idx_machine_sections_machine_id ON public.machine_sections USING btree (machine_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machine_sections",
+    "indexname": "idx_machine_sections_owner_id",
+    "indexdef": "CREATE INDEX idx_machine_sections_owner_id ON public.machine_sections USING btree (owner_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machine_sections",
+    "indexname": "machine_sections_pkey",
+    "indexdef": "CREATE UNIQUE INDEX machine_sections_pkey ON public.machine_sections USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machine_sections",
+    "indexname": "machine_sections_unique_title_per_machine",
+    "indexdef": "CREATE UNIQUE INDEX machine_sections_unique_title_per_machine ON public.machine_sections USING btree (machine_id, title)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machines",
+    "indexname": "idx_machines_library_refs_gin",
+    "indexdef": "CREATE INDEX idx_machines_library_refs_gin ON public.machines USING gin (library_refs)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machines",
+    "indexname": "idx_machines_owner_id",
+    "indexdef": "CREATE INDEX idx_machines_owner_id ON public.machines USING btree (owner_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "machines",
+    "indexname": "machines_pkey",
+    "indexdef": "CREATE UNIQUE INDEX machines_pkey ON public.machines USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "measurements",
+    "indexname": "measurements_owner_id_idx",
+    "indexdef": "CREATE INDEX measurements_owner_id_idx ON public.measurements USING btree (owner_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "measurements",
+    "indexname": "measurements_pkey",
+    "indexdef": "CREATE UNIQUE INDEX measurements_pkey ON public.measurements USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "measurements",
+    "indexname": "measurements_test_session_event_id_idx",
+    "indexdef": "CREATE INDEX measurements_test_session_event_id_idx ON public.measurements USING btree (test_session_event_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "profiles",
+    "indexname": "profiles_pkey",
+    "indexdef": "CREATE UNIQUE INDEX profiles_pkey ON public.profiles USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "terminal_logs",
+    "indexname": "idx_terminal_logs_action_type",
+    "indexdef": "CREATE INDEX idx_terminal_logs_action_type ON public.terminal_logs USING btree (action_type)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "terminal_logs",
+    "indexname": "idx_terminal_logs_machine_id",
+    "indexdef": "CREATE INDEX idx_terminal_logs_machine_id ON public.terminal_logs USING btree (machine_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "terminal_logs",
+    "indexname": "idx_terminal_logs_owner_id",
+    "indexdef": "CREATE INDEX idx_terminal_logs_owner_id ON public.terminal_logs USING btree (owner_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "terminal_logs",
+    "indexname": "terminal_logs_pkey",
+    "indexdef": "CREATE UNIQUE INDEX terminal_logs_pkey ON public.terminal_logs USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "test_session_events",
+    "indexname": "test_session_events_pkey",
+    "indexdef": "CREATE UNIQUE INDEX test_session_events_pkey ON public.test_session_events USING btree (id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "test_sessions",
+    "indexname": "test_sessions_pkey",
+    "indexdef": "CREATE UNIQUE INDEX test_sessions_pkey ON public.test_sessions USING btree (id)"
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+5) (Optional but recommended) Non-FK constraints (PK/UNIQUE/CHECK)
+[
+  {
+    "schema_name": "public",
+    "table_name": "assets",
+    "constraint_name": "assets_event_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (test_session_event_id) REFERENCES test_session_events(id) ON DELETE RESTRICT"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "assets",
+    "constraint_name": "assets_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE RESTRICT"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "assets",
+    "constraint_name": "assets_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "entry_sections",
+    "constraint_name": "entry_sections_display_type_check",
+    "constraint_type": "c",
+    "constraint_definition": "CHECK ((display_type = ANY (ARRAY['text'::text, 'sketch'::text])))"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "entry_sections",
+    "constraint_name": "entry_sections_entry_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (entry_id) REFERENCES library_entries(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "entry_sections",
+    "constraint_name": "entry_sections_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "entry_sections",
+    "constraint_name": "entry_sections_unique_title_per_entry",
+    "constraint_type": "u",
+    "constraint_definition": "UNIQUE (entry_id, title)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "library_entries",
+    "constraint_name": "library_entries_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "library_entries",
+    "constraint_name": "library_entries_slug_key",
+    "constraint_type": "u",
+    "constraint_definition": "UNIQUE (slug)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "library_entries",
+    "constraint_name": "library_entries_topic_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (topic_id) REFERENCES library_topics(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "library_topics",
+    "constraint_name": "library_topics_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "library_topics",
+    "constraint_name": "library_topics_slug_key",
+    "constraint_type": "u",
+    "constraint_definition": "UNIQUE (slug)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_display_type_check",
+    "constraint_type": "c",
+    "constraint_definition": "CHECK ((display_type = ANY (ARRAY['text'::text, 'sketch'::text])))"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_machine_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machine_sections",
+    "constraint_name": "machine_sections_unique_title_per_machine",
+    "constraint_type": "u",
+    "constraint_definition": "UNIQUE (machine_id, title)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machines",
+    "constraint_name": "machines_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "machines",
+    "constraint_name": "machines_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "measurements",
+    "constraint_name": "measurements_event_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (test_session_event_id) REFERENCES test_session_events(id) ON DELETE RESTRICT"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "measurements",
+    "constraint_name": "measurements_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE RESTRICT"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "measurements",
+    "constraint_name": "measurements_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "profiles",
+    "constraint_name": "profiles_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "profiles",
+    "constraint_name": "profiles_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "terminal_logs",
+    "constraint_name": "terminal_logs_machine_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE SET NULL"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "terminal_logs",
+    "constraint_name": "terminal_logs_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "terminal_logs",
+    "constraint_name": "terminal_logs_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_session_events",
+    "constraint_name": "test_session_events_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE RESTRICT"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_session_events",
+    "constraint_name": "test_session_events_owner_session_match",
+    "constraint_type": "c",
+    "constraint_definition": "CHECK ((owner_id IS NOT NULL))"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_session_events",
+    "constraint_name": "test_session_events_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_session_events",
+    "constraint_name": "test_session_events_test_session_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (test_session_id) REFERENCES test_sessions(id) ON DELETE CASCADE"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_sessions",
+    "constraint_name": "test_sessions_machine_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (machine_id) REFERENCES machines(id) ON DELETE SET NULL"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_sessions",
+    "constraint_name": "test_sessions_owner_id_fkey",
+    "constraint_type": "f",
+    "constraint_definition": "FOREIGN KEY (owner_id) REFERENCES profiles(id) ON DELETE RESTRICT"
+  },
+  {
+    "schema_name": "public",
+    "table_name": "test_sessions",
+    "constraint_name": "test_sessions_pkey",
+    "constraint_type": "p",
+    "constraint_definition": "PRIMARY KEY (id)"
+  }
+]
+
+6) Frontend/backend reconciliation notes
+- The frontend now maps the notebook UI to the backend tables.
+- `machines` is the main notebook table. The UI expects:
+  - `title` as machine name
+  - `description` as the notebook question or secondary text when `ui.question` is absent
+  - `status` to drive the selected notebook state
+  - `library_refs` as an array of `library_entries.slug` values
+  - `ui` as JSONB metadata for presentation fields such as `number`, `type`, `date`, `progress`, and `question`
+- `machine_sections` is the notebook section table. It should store:
+  - `display_type` = `text` or `sketch`
+  - `content` as string, array, or structured JSON for rendered section body
+  - optional `icon` for UI display
+  - `sort_order` for ordering sections inside a machine
+  - `sections` can be used for nested reference lists or structured content if needed
+- `library_topics` and `library_entries` power the engineering library panel. `library_entries.slug` is used by frontend `machines.library_refs` to link notebooks to library content.
+- `profiles`, `machines.owner_id`, and `machine_sections.owner_id` are owner-scoped. The frontend should eventually restrict reads to the authenticated user's profile. Until auth is wired, a default sample `profiles` row and matching `auth.users` row are required for backend inserts.
+- `terminal_logs` is available for later persistence of command history.
+- The frontend currently attempts Supabase reads from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, with a local fallback to `http://127.0.0.1:54321` if no explicit values are provided.
+- Sample backend data should include one profile, one machine, linked machine_sections, and a small library topic/entry set so the frontend can render notebooks and library links.
+- Example seed pattern:
+  - `library_topics`: one row per topic with `slug`, `title`, `icon`, `sort_order`, `ui`.
+  - `library_entries`: values for `topic_id`, `slug`, `title`, `summary`, and optional `ui.sections`.
+  - `machines`: values for `owner_id`, `title`, `description`, `status`, `workspace_mode`, `library_refs`, and `ui`.
+  - `machine_sections`: values for `machine_id`, `owner_id`, `title`, `display_type`, `content`, `sort_order`, and optional `icon`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

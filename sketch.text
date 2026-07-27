@@ -2256,14 +2256,13 @@
   - `machines`: values for `owner_id`, `title`, `description`, `status`, `workspace_mode`, `library_refs`, and `ui`.
   - `machine_sections`: values for `machine_id`, `owner_id`, `title`, `display_type`, `content`, `sort_order`, and optional `icon`.
 
-
-
-
-
-
-
-
-
+7) Current portfolio state
+- The frontend is now wired to Supabase for notebook data and protects the main workspace behind auth.
+- Email-only login is implemented using Supabase OTP sign-in links; no password is required.
+- The main app renders `machines`, `machine_sections`, `library_topics`, and `library_entries` from the backend, with a fallback offline dataset when backend access is unavailable.
+- Custom branding is in place through `src/assets/brand-mark.svg`; Quasar logo usage has been removed from the login/workspace UI.
+- Route guarding is active: `/` requires authentication and redirects to `/login` for unauthenticated users.
+- Current known issue fixed: the router guard no longer uses the deprecated `next()` callback and no longer declares an unused `from` parameter.
 
 
 

@@ -1,5 +1,6 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useSupabaseClient } from 'src/composables/useSupabaseClient'
+import { useSupabaseAuth } from 'src/composables/useSupabaseAuth'
 import { commandList, responses } from 'src/data/terminalData'
 
 const sectionIconFallback = (title, displayType) => {
@@ -31,8 +32,8 @@ const normalizeMachineSection = (raw) => {
     references: Array.isArray(raw.references)
       ? raw.references
       : Array.isArray(raw.sections)
-      ? raw.sections.map((item) => item.reference).filter(Boolean)
-      : [],
+        ? raw.sections.map((item) => item.reference).filter(Boolean)
+        : [],
   }
 }
 
@@ -93,7 +94,7 @@ const buildLibraryMap = (entries) => {
   return map
 }
 
-const DEFAULT_MACHINES = [
+const FALLBACK_MACHINES = [
   {
     id: 'offline-machine-001',
     number: 'Machine #001',
@@ -128,7 +129,7 @@ const DEFAULT_MACHINES = [
   },
 ]
 
-const DEFAULT_LIBRARY = [
+const FALLBACK_LIBRARY = [
   {
     id: 'structures',
     title: 'Structures',
@@ -151,7 +152,10 @@ const DEFAULT_LIBRARY = [
           },
           {
             title: 'Math',
-            items: ['Bending stress depends on moment and section modulus.', 'Buckling and fatigue matter near holes and welds.'],
+            items: [
+              'Bending stress depends on moment and section modulus.',
+              'Buckling and fatigue matter near holes and welds.',
+            ],
           },
         ],
       },
@@ -161,27 +165,32 @@ const DEFAULT_LIBRARY = [
 
 export function useNotebookWorkspace() {
   const { supabase } = useSupabaseClient()
+  const { initSupabaseAuth } = useSupabaseAuth()
 
   const terminalOpen = ref(false)
-  const selectedId = ref(DEFAULT_MACHINES[0].id)
-  const selectedLibraryId = ref(DEFAULT_LIBRARY[0].entries[0].id)
+  const selectedId = ref('')
+  const selectedLibraryId = ref('')
   const currentInput = ref('')
   const cmdInput = ref(null)
   const scrollArea = ref(null)
-  const machines = ref([...DEFAULT_MACHINES])
-  const engineeringLibraries = ref([...DEFAULT_LIBRARY])
-  const libraryMap = ref(buildLibraryMap(DEFAULT_LIBRARY[0].entries))
+  const machines = ref([])
+  const engineeringLibraries = ref([])
+  const libraryMap = ref({})
   const history = ref([])
 
   const selectedMachine = computed(() => {
-    return machines.value.find((machine) => machine.id === selectedId.value) || machines.value[0]
+    return (
+      machines.value.find((machine) => machine.id === selectedId.value) ||
+      machines.value[0] ||
+      FALLBACK_MACHINES[0]
+    )
   })
 
   const activeLibrary = computed(() => {
     return (
       libraryMap.value[selectedLibraryId.value] ||
       Object.values(libraryMap.value)[0] ||
-      DEFAULT_LIBRARY[0].entries[0]
+      FALLBACK_LIBRARY[0].entries[0]
     )
   })
 
@@ -206,16 +215,35 @@ export function useNotebookWorkspace() {
 
   const loadWorkspace = async () => {
     try {
-      const [{ data: machinesData, error: machinesError }, { data: sectionsData, error: sectionsError }, { data: topicsData, error: topicsError }, { data: entriesData, error: entriesError }] = await Promise.all([
-        supabase.from('machines').select('*').order('created_at', { ascending: false }),
-        supabase.from('machine_sections').select('*').order('sort_order', { ascending: true }),
+      if (!supabase) {
+        machines.value = FALLBACK_MACHINES
+        engineeringLibraries.value = FALLBACK_LIBRARY
+        libraryMap.value = buildLibraryMap(FALLBACK_LIBRARY[0].entries)
+        selectedId.value = selectedId.value || FALLBACK_MACHINES[0].id
+        selectedLibraryId.value = selectedLibraryId.value || FALLBACK_LIBRARY[0].entries[0]?.id
+        return
+      }
+
+      const session = await initSupabaseAuth()
+      const ownerId = session?.user?.id
+
+      const machinesQuery = supabase.from('machines').select('*')
+      if (ownerId) {
+        machinesQuery.eq('owner_id', ownerId)
+      }
+
+      const [
+        { data: machinesData, error: machinesError },
+        { data: topicsData, error: topicsError },
+        { data: entriesData, error: entriesError },
+      ] = await Promise.all([
+        machinesQuery.order('created_at', { ascending: false }),
         supabase.from('library_topics').select('*').order('sort_order', { ascending: true }),
         supabase.from('library_entries').select('*').order('title', { ascending: true }),
       ])
 
-      if (machinesError || sectionsError || topicsError || entriesError) {
-        console.warn('Backend fetch warnings:', machinesError, sectionsError, topicsError, entriesError)
-        return
+      if (machinesError || topicsError || entriesError) {
+        console.warn('Backend fetch warnings:', machinesError, topicsError, entriesError)
       }
 
       if (Array.isArray(entriesData) && Array.isArray(topicsData)) {
@@ -224,21 +252,41 @@ export function useNotebookWorkspace() {
           return acc
         }, {})
 
-        const normalizedEntries = entriesData.map((entry) => normalizeLibraryEntry(entry, topicsById[entry.topic_id] || {}))
+        const normalizedEntries = entriesData.map((entry) =>
+          normalizeLibraryEntry(entry, topicsById[entry.topic_id] || {}),
+        )
         const groupedTopics = topicsData.map((topic) => ({
           id: topic.id,
           title: topic.title,
           icon: topic.icon || 'menu_book',
-          entries: normalizedEntries.filter((entry) => entry.category === topic.slug || entry.category === topic.title),
+          entries: normalizedEntries.filter(
+            (entry) => entry.category === topic.slug || entry.category === topic.title,
+          ),
         }))
 
         engineeringLibraries.value = groupedTopics.filter((topic) => topic.entries.length > 0)
         libraryMap.value = buildLibraryMap(normalizedEntries)
-        selectedLibraryId.value = libraryMap.value[selectedLibraryId.value]?.id || normalizedEntries[0]?.id || selectedLibraryId.value
+        selectedLibraryId.value =
+          libraryMap.value[selectedLibraryId.value]?.id ||
+          normalizedEntries[0]?.id ||
+          selectedLibraryId.value
+      } else {
+        engineeringLibraries.value = FALLBACK_LIBRARY
+        libraryMap.value = buildLibraryMap(FALLBACK_LIBRARY[0].entries)
+        selectedLibraryId.value = selectedLibraryId.value || FALLBACK_LIBRARY[0].entries[0]?.id
       }
 
-      if (Array.isArray(machinesData) && Array.isArray(sectionsData)) {
-        const machineSectionsByMachine = sectionsData.reduce((acc, section) => {
+      if (Array.isArray(machinesData)) {
+        const machineIds = machinesData.map((machine) => machine.id)
+        const sectionsData = machineIds.length
+          ? await supabase
+              .from('machine_sections')
+              .select('*')
+              .in('machine_id', machineIds)
+              .order('sort_order', { ascending: true })
+          : { data: [] }
+
+        const machineSectionsByMachine = (sectionsData.data || []).reduce((acc, section) => {
           const normalized = normalizeMachineSection(section)
           const machineId = section.machine_id
           if (!acc[machineId]) acc[machineId] = []
@@ -253,11 +301,21 @@ export function useNotebookWorkspace() {
         })
 
         if (!machines.value.find((machine) => machine.id === selectedId.value)) {
-          selectedId.value = machines.value[0]?.id || selectedId.value
+          selectedId.value = machines.value[0]?.id || ''
         }
+      }
+
+      if (!machines.value.length) {
+        machines.value = FALLBACK_MACHINES
+        selectedId.value = selectedId.value || FALLBACK_MACHINES[0].id
       }
     } catch (error) {
       console.warn('Unable to load workspace from backend:', error)
+      machines.value = FALLBACK_MACHINES
+      engineeringLibraries.value = FALLBACK_LIBRARY
+      libraryMap.value = buildLibraryMap(FALLBACK_LIBRARY[0].entries)
+      selectedId.value = selectedId.value || FALLBACK_MACHINES[0].id
+      selectedLibraryId.value = selectedLibraryId.value || FALLBACK_LIBRARY[0].entries[0]?.id
     }
   }
 

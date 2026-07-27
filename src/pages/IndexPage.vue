@@ -2,7 +2,7 @@
   <q-page class="notebook-shell">
     <aside class="machine-rail">
       <div class="brand-block">
-        <div class="brand-mark">OS</div>
+        <img class="brand-mark" :src="brandMark" alt="Observation OS" />
         <div>
           <p class="eyebrow">Observation OS</p>
           <h1>Machine notebooks</h1>
@@ -10,7 +10,13 @@
       </div>
 
       <div class="rail-actions">
-        <q-btn unelevated icon="add" label="New entry" class="new-entry-btn" @click="createEntry" />
+        <q-btn
+          unelevated
+          icon="add"
+          label="New notebook"
+          class="new-entry-btn"
+          @click="createEntry"
+        />
         <q-btn
           flat
           round
@@ -20,6 +26,16 @@
           @click="toggleTerminal"
         >
           <q-tooltip>Toggle command log</q-tooltip>
+        </q-btn>
+        <q-btn
+          flat
+          round
+          icon="logout"
+          class="rail-icon-btn"
+          v-if="userEmail"
+          @click="signOutAndRedirect"
+        >
+          <q-tooltip>Sign out</q-tooltip>
         </q-btn>
       </div>
 
@@ -227,7 +243,20 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useNotebookWorkspace } from 'src/composables/useNotebookWorkspace'
+import { useSupabaseAuth } from 'src/composables/useSupabaseAuth'
+import brandMark from 'src/assets/brand-mark.svg'
+
+const router = useRouter()
+const { user, signOut } = useSupabaseAuth()
+const userEmail = computed(() => user.value?.email || '')
+
+const signOutAndRedirect = async () => {
+  await signOut()
+  router.push('/login')
+}
 
 const {
   terminalOpen,

@@ -10,7 +10,9 @@
           </div>
         </div>
 
-        <p class="login-copy">Enter email address, we'll send a secure sign-in link.</p>
+        <p class="login-copy">
+          No password needed. Enter your email address and we'll send you a secure sign-in link.
+        </p>
 
         <q-form @submit.prevent="submitEmail" class="login-form">
           <q-input

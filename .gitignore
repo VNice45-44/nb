@@ -31,5 +31,5 @@ yarn-error.log*
 
 # local .env files
 .env.local*
-.sketch.text
+sketch.text
 .env

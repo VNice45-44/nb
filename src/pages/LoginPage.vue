@@ -16,7 +16,7 @@
         </div>
 
         <div class="login-terminal-log">
-          <p class="terminal-muted">Observation OS access layer initialized.</p>
+          <p class="terminal-muted">Observation OS access layer.</p>
           <p>
             <span class="prompt-prefix">zinja@system:~$</span>
             <span class="cmd-text">/help</span>

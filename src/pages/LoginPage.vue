@@ -1,58 +1,91 @@
 <template>
-  <q-page class="login-page">
-    <div class="login-card-wrapper">
-      <div class="login-card">
-        <div class="brand-block">
-          <img class="brand-mark" :src="brandMark" alt="Observation OS" />
-          <div>
-            <p class="eyebrow">Observation OS</p>
-            <h1>Sign in with email</h1>
-          </div>
+  <q-page class="login-terminal-page">
+    <section class="login-terminal-shell">
+      <header class="login-terminal-brand">
+        <img class="brand-mark" :src="brandMark" alt="Observation OS" />
+        <div>
+          <p class="eyebrow">Observation OS</p>
+          <h1>Email access terminal</h1>
+        </div>
+      </header>
+
+      <div class="login-terminal-window">
+        <div class="login-terminal-bar">
+          <span>zinja@observation:~/access</span>
+          <span>AUTH // EMAIL ONLY</span>
         </div>
 
-        <p class="login-copy">Enter your email address and I'll send you a secure sign-in link.</p>
+        <div class="login-terminal-log">
+          <p class="terminal-muted">Observation OS access layer initialized.</p>
+          <p>
+            <span class="prompt-prefix">zinja@system:~$</span>
+            <span class="cmd-text">/help</span>
+          </p>
+          <div class="terminal-response">
+            <div>[System Directives Available]:</div>
+            <ul>
+              <li v-for="item in commandList" :key="item.command">
+                <strong>{{ item.command }}</strong> - {{ item.description }}
+              </li>
+            </ul>
+          </div>
+          <p>
+            <span class="prompt-prefix">zinja@system:~$</span>
+            <span class="cmd-text">/contact</span>
+          </p>
+          <div class="terminal-response" v-html="responses['/contact']"></div>
+          <p>
+            <span class="prompt-prefix">zinja@system:~$</span>
+            <span class="cmd-text">request email access</span>
+          </p>
+        </div>
 
-        <q-form @submit.prevent="submitEmail" class="login-form">
-          <q-input
-            v-model="email"
-            label="Email address"
-            type="email"
-            autofocus
-            lazy-rules
-            :rules="[
-              (val) => !!val || 'Email is required',
-              (val) => /.+@.+\..+/.test(val) || 'Enter a valid email',
-            ]"
-            class="login-input"
-          />
+        <q-form @submit.prevent="submitEmail" class="login-terminal-form">
+          <label class="terminal-email-row">
+            <span class="prompt-prefix">email:</span>
+            <input
+              v-model="email"
+              type="email"
+              autofocus
+              autocomplete="email"
+              spellcheck="false"
+              placeholder="you@example.com"
+              aria-label="Email address"
+            />
+          </label>
 
-          <div class="login-actions">
+          <div class="login-terminal-actions">
             <q-btn
               type="submit"
-              label="Send sign-in link"
               unelevated
-              color="primary"
+              icon="send"
+              label="Send sign-in link"
+              class="terminal-submit-btn"
               :loading="isLoading"
             />
           </div>
         </q-form>
 
-        <div class="login-status">
+        <div class="login-terminal-status" aria-live="polite">
           <p v-if="message" class="success">{{ message }}</p>
           <p v-if="error" class="error">{{ error }}</p>
           <p v-if="userEmail" class="signed-in">
             Signed in as <strong>{{ userEmail }}</strong
             >. Redirecting...
           </p>
+          <p v-if="!message && !error && !userEmail" class="terminal-muted">
+            Wait for a magic link. No password stored here.
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   </q-page>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { commandList, responses } from 'src/data/terminalData'
 import { useSupabaseAuth, initSupabaseAuth, loginWithEmail } from 'src/composables/useSupabaseAuth'
 import brandMark from 'src/assets/brand-mark.svg'
 

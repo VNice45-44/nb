@@ -118,39 +118,58 @@
           <div class="notebook-grid">
             <article
               v-for="section in selectedMachine.sections"
-              :key="section.title"
+             :key="section.sectionKey || section.id"
               class="note-section"
               :class="section.kind"
             >
               <header>
                 <q-icon :name="section.icon" />
-                <h3>{{ section.title }}</h3>
-              </header>
+               <div>
+                 <h3>{{ section.title }}</h3>
+                 <p v-if="section.displayType && section.displayType !== 'text'" class="section-kind">
+                   {{ section.displayType }}
+                 </p>
+               </div>
+             </header>
 
-              <div v-if="section.kind === 'sketch'" class="sketch-pad">
-                <div class="boom"></div>
-                <div class="arm"></div>
-                <div class="bucket"></div>
-                <div class="track"></div>
-                <p>{{ section.content }}</p>
+             <div v-if="section.displayType === 'sketch'" class="sketch-pad">
+               <div class="boom"></div>
+               <div class="arm"></div>
+               <div class="bucket"></div>
+               <div class="track"></div>
+               <p>{{ section.content }}</p>
+             </div>
+
+             <ul v-else-if="Array.isArray(section.content)" class="note-list">
+               <li v-for="(item, index) in section.content" :key="`${section.sectionKey || section.id}-${index}`">
+                 <span v-if="typeof item === 'string'">{{ item }}</span>
+                 <span v-else-if="item?.text">{{ item.text }}</span>
+                 <span v-else>{{ JSON.stringify(item) }}</span>
+               </li>
+             </ul>
+
+             <div v-else-if="section.content && typeof section.content === 'object'" class="structured-payload">
+               <pre>{{ JSON.stringify(section.content, null, 2) }}</pre>
               </div>
 
-              <ul v-else-if="Array.isArray(section.content)" class="note-list">
-                <li v-for="item in section.content" :key="item">{{ item }}</li>
-              </ul>
+             <p v-else>{{ section.content }}</p>
 
-              <p v-else>{{ section.content }}</p>
+             <div v-if="section.metadata && Object.keys(section.metadata).length" class="section-metadata">
+               <span v-if="section.metadata.status" class="meta-pill">{{ section.metadata.status }}</span>
+               <span v-for="tag in section.metadata.tags || []" :key="tag" class="meta-pill">{{ tag }}</span>
+               <span v-if="section.metadata.units" class="meta-pill">{{ section.metadata.units }}</span>
+             </div>
 
-              <div v-if="section.references?.length" class="reference-row">
-                <button
-                  v-for="reference in section.references"
-                  :key="reference"
-                  type="button"
-                  @click="openLibrary(reference)"
-                >
-                  {{ libraryMap[reference]?.title || reference }}
-                </button>
-              </div>
+             <div v-if="section.references?.length" class="reference-row">
+               <button
+                 v-for="reference in section.references"
+                 :key="reference"
+                 type="button"
+                 @click="openLibrary(reference)"
+               >
+                 {{ libraryMap[reference]?.title || reference }}
+               </button>
+             </div>
             </article>
           </div>
         </section>

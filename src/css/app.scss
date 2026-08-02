@@ -376,10 +376,14 @@ body {
 
 .note-section header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 9px;
   margin-bottom: 12px;
   color: #526d5a;
+}
+
+.note-section header > div {
+  min-width: 0;
 }
 
 .note-section h3 {
@@ -389,6 +393,15 @@ body {
   line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.section-kind {
+  margin: 4px 0 0;
+  color: #8d6f3a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .note-section p,
@@ -429,6 +442,42 @@ body {
   top: 0.68em;
   border-radius: 50%;
   background: #8d6f3a;
+}
+
+.structured-payload {
+  border: 1px dashed rgba(39, 37, 30, 0.24);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: rgba(82, 109, 90, 0.06);
+}
+
+.structured-payload pre {
+  margin: 0;
+  font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.section-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(82, 109, 90, 0.12);
+  color: #314436;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .sketch-pad {

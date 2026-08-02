@@ -19,21 +19,51 @@ const normalizeSectionContent = (payload) => {
   if (Array.isArray(payload.items)) return payload.items
   if (typeof payload.text === 'string') return payload.text
   if (payload.content !== undefined) return normalizeSectionContent(payload.content)
-  return JSON.stringify(payload, null, 2)
+  if (payload.value !== undefined) return payload.value
+  if (payload.body !== undefined) return normalizeSectionContent(payload.body)
+  if (typeof payload.summary === 'string') return payload.summary
+  return payload
+}
+
+const extractSectionReferences = (raw, content) => {
+  if (Array.isArray(raw.references) && raw.references.length) return raw.references
+
+  const metadataRefs = Array.isArray(raw.metadata?.references) ? raw.metadata.references : []
+  if (metadataRefs.length) return metadataRefs
+
+  if (Array.isArray(content?.references) && content.references.length) return content.references
+
+  if (Array.isArray(raw.sections)) {
+    return raw.sections
+      .flatMap((item) => {
+        if (Array.isArray(item?.items)) {
+          return item.items.map((entry) => entry.reference).filter(Boolean)
+        }
+        if (item?.reference) {
+          return [item.reference]
+        }
+        return []
+      })
+      .filter(Boolean)
+  }
+
+  return []
 }
 
 const normalizeMachineSection = (raw) => {
+  const content = normalizeSectionContent(raw.content)
+
   return {
     id: raw.id,
+    sectionKey: raw.section_key || raw.id,
     title: raw.title || 'Untitled section',
     icon: raw.icon || sectionIconFallback(raw.title, raw.display_type),
-    kind: raw.display_type === 'sketch' ? 'sketch' : 'text',
-    content: normalizeSectionContent(raw.content),
-    references: Array.isArray(raw.references)
-      ? raw.references
-      : Array.isArray(raw.sections)
-        ? raw.sections.map((item) => item.reference).filter(Boolean)
-        : [],
+    displayType: raw.display_type || 'text',
+    kind: raw.display_type === 'sketch' ? 'sketch' : raw.display_type || 'text',
+    content,
+    references: extractSectionReferences(raw, content),
+    metadata: raw.metadata || {},
+    raw,
   }
 }
 
@@ -98,32 +128,95 @@ const FALLBACK_MACHINES = [
   {
     id: 'offline-machine-001',
     number: 'Machine #001',
-    name: 'Excavator',
-    type: 'Hydraulic earth mover',
-    date: '2026-07-05',
-    status: 'Observing',
-    progress: 42,
-    question: 'How does an excavator multiply force?',
-    libraryRefs: ['box-beams', 'hydraulic-cylinders', 'moments', 'pins-bushings'],
+    name: 'Gear train concept',
+    type: 'Mechanical power transmission',
+    date: '2026-08-01',
+    status: 'Sketching',
+    progress: 28,
+    question: 'How do we transfer torque through a compact, durable gear pair?',
+    libraryRefs: ['gear-train', 'shaft-design', 'bearing-loads'],
     sections: [
       {
         id: 'offline-section-1',
-        title: 'Observations',
-        icon: 'visibility',
-        kind: 'text',
+        sectionKey: 'gear-intent',
+        title: 'Design intent',
+        icon: 'article',
+        display_type: 'text',
         content: [
-          'The operator moves tiny levers, but the bucket tears through compacted soil.',
-          'The boom moves slowly and deliberately, suggesting force is being traded for speed.',
-          'The machine anchors itself through mass, tracks, and a wide contact patch.',
+          'The target is a compact gearbox that couples a motor to an output shaft without excessive size.',
+          'We want the assembly to be easy to inspect and service, with clear access to lubrication points.',
         ],
       },
       {
         id: 'offline-section-2',
-        title: 'Sketches',
+        sectionKey: 'gear-sketch',
+        title: 'Sketch',
         icon: 'gesture',
-        kind: 'sketch',
-        content: 'Boom, stick, bucket, cylinders, tracks. Draw force arrows next.',
-        references: ['box-beams', 'hydraulic-cylinders', 'pins-bushings'],
+        display_type: 'sketch',
+        content: 'Pinion, idler, output gear, input shaft, and support bearings. Mark the contact pattern next.',
+        references: ['gear-train', 'shaft-design'],
+      },
+      {
+        id: 'offline-section-3',
+        sectionKey: 'gear-checklist',
+        title: 'Checklist',
+        icon: 'checklist',
+        display_type: 'checklist',
+        content: ['Confirm module and face width', 'Verify shaft spacing', 'Check lubrication access'],
+        metadata: { status: 'open', tags: ['gear', 'assembly'] },
+      },
+      {
+        id: 'offline-section-4',
+        sectionKey: 'gear-calculation',
+        title: 'Calculation',
+        icon: 'functions',
+        display_type: 'calculation',
+        content: {
+          formula: 'T = F × r',
+          values: {
+            force: '150 N',
+            radius: '0.08 m',
+            result: '12 N·m',
+          },
+        },
+        metadata: { units: 'N·m' },
+      },
+    ],
+  },
+  {
+    id: 'offline-machine-002',
+    number: 'Machine #002',
+    name: 'Flatbed trailer concept',
+    type: 'Light-duty transport platform',
+    date: '2026-08-02',
+    status: 'Observing',
+    progress: 18,
+    question: 'How do we keep the deck stiff while staying light and easy to tow?',
+    libraryRefs: ['trailer-frame', 'coupler', 'load-paths'],
+    sections: [
+      {
+        id: 'offline-section-5',
+        sectionKey: 'trailer-framework',
+        title: 'Frame assumptions',
+        icon: 'view_in_ar',
+        display_type: 'assumption',
+        content: [
+          'Use a rectangular frame with cross-members at the wheelbase and deck edges.',
+          'Use the tongue as a load path to the hitch rather than a separate brace.',
+        ],
+        metadata: { tags: ['trailer', 'frame'] },
+      },
+      {
+        id: 'offline-section-6',
+        sectionKey: 'trailer-measurement',
+        title: 'Measurement',
+        icon: 'straighten',
+        display_type: 'measurement',
+        content: {
+          deckWidth: '1.8 m',
+          deckLength: '3.2 m',
+          payloadTarget: '800 kg',
+        },
       },
     ],
   },
@@ -131,31 +224,83 @@ const FALLBACK_MACHINES = [
 
 const FALLBACK_LIBRARY = [
   {
+    id: 'power-transmission',
+    title: 'Power transmission',
+    icon: 'sync_alt',
+    entries: [
+      {
+        id: 'gear-train',
+        slug: 'gear-train',
+        category: 'power-transmission',
+        title: 'Gear train',
+        kind: 'Principle',
+        icon: 'sync_alt',
+        path: ['Power transmission', 'Gear train'],
+        summary:
+          'Gear trains trade speed for torque while keeping the motion path controlled, which is useful for compact mechanical drives.',
+        sections: [
+          {
+            title: 'Observation',
+            items: ['Check tooth contact and center distance before assuming the train is correct.'],
+          },
+          {
+            title: 'Calculation',
+            items: ['Torque and speed scale through the gear ratio.'],
+          },
+        ],
+      },
+      {
+        id: 'shaft-design',
+        slug: 'shaft-design',
+        category: 'power-transmission',
+        title: 'Shaft design',
+        kind: 'Design pattern',
+        icon: 'engineering',
+        path: ['Power transmission', 'Shaft design'],
+        summary: 'Shafts need enough diameter and support to carry torque, bending, and vibration without excessive deflection.',
+        sections: [
+          {
+            title: 'Observation',
+            items: ['Support spacing and keyway placement change the stress pattern dramatically.'],
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: 'structures',
     title: 'Structures',
     icon: 'view_in_ar',
     entries: [
       {
-        id: 'box-beams',
-        slug: 'box-beams',
+        id: 'trailer-frame',
+        slug: 'trailer-frame',
         category: 'structures',
-        title: 'Box beams',
+        title: 'Trailer frame',
         kind: 'Structural element',
         icon: 'view_in_ar',
-        path: ['Structures', 'Beams', 'Box beams'],
-        summary:
-          'Closed beam sections resist bending and torsion well for their weight, which is why machine arms often look like hollow boxes instead of solid bars.',
+        path: ['Structures', 'Trailer frame'],
+        summary: 'A trailer bed needs a clear load path from the deck to the axle and hitch so the platform stays stiff and predictable.',
         sections: [
           {
             title: 'Observation',
-            items: ['Look for welded seams, gussets, tapered depth, and load paths toward pivots.'],
+            items: ['Cross-members near the axle and tongue reduce twist.'],
           },
+        ],
+      },
+      {
+        id: 'coupler',
+        slug: 'coupler',
+        category: 'structures',
+        title: 'Coupler',
+        kind: 'Connection',
+        icon: 'link',
+        path: ['Structures', 'Coupler'],
+        summary: 'The coupler should present a stable, repeatable connection point while keeping the trailer easy to attach and detach.',
+        sections: [
           {
-            title: 'Math',
-            items: [
-              'Bending stress depends on moment and section modulus.',
-              'Buckling and fatigue matter near holes and welds.',
-            ],
+            title: 'Observation',
+            items: ['Misalignment at the hitch creates bending that the frame must absorb.'],
           },
         ],
       },
@@ -333,8 +478,10 @@ export function useNotebookWorkspace() {
       sections: [
         {
           id: `section-${Date.now()}`,
+          sectionKey: `section-${Date.now()}`,
           title: 'New section',
           icon: 'article',
+          display_type: 'text',
           kind: 'text',
           content: 'Use this space to capture observations.',
         },
@@ -343,6 +490,48 @@ export function useNotebookWorkspace() {
 
     machines.value.unshift(fallback)
     selectedId.value = fallback.id
+  }
+
+  const updateSectionContent = async (sectionKeyOrId, nextContent, metadata = {}) => {
+    const targetMachine = machines.value.find((machine) =>
+      machine.sections.some((section) => section.sectionKey === sectionKeyOrId || section.id === sectionKeyOrId),
+    )
+
+    if (!targetMachine) {
+      return null
+    }
+
+    const targetSection = targetMachine.sections.find(
+      (section) => section.sectionKey === sectionKeyOrId || section.id === sectionKeyOrId,
+    )
+
+    if (!targetSection) {
+      return null
+    }
+
+    const nextMetadata = {
+      ...(targetSection.metadata || {}),
+      ...metadata,
+    }
+
+    targetSection.content = nextContent
+    targetSection.metadata = nextMetadata
+
+    if (supabase && targetSection.id) {
+      const { error } = await supabase
+        .from('machine_sections')
+        .update({
+          content: nextContent,
+          metadata: nextMetadata,
+        })
+        .eq('id', targetSection.id)
+
+      if (error) {
+        console.warn('Unable to persist section content:', error)
+      }
+    }
+
+    return targetSection
   }
 
   const toggleTerminal = () => {
@@ -399,6 +588,7 @@ export function useNotebookWorkspace() {
     activeLibrary,
     openLibrary,
     createEntry,
+    updateSectionContent,
     toggleTerminal,
     history,
     execute,

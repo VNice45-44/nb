@@ -63,7 +63,6 @@ const normalizeMachineSection = (raw) => {
     content,
     references: extractSectionReferences(raw, content),
     metadata: raw.metadata || {},
-    raw,
   }
 }
 
@@ -95,7 +94,7 @@ const normalizeLibraryEntry = (entry, topic) => {
 
 const normalizeMachine = (raw, index) => {
   const ui = raw.ui || {}
-  const dateValue = ui.date || raw.created_at || ''
+  const dateValue = raw.created_at || ui.date || ''
 
   return {
     id: raw.id,
@@ -109,8 +108,6 @@ const normalizeMachine = (raw, index) => {
     libraryRefs: Array.isArray(raw.library_refs) ? raw.library_refs : [],
     activityDates: Array.isArray(ui.activityDates) ? ui.activityDates : [],
     sections: [],
-    ui,
-    raw,
   }
 }
 
@@ -143,9 +140,7 @@ const FALLBACK_MACHINES = [
     progress: 28,
     question: 'How do we transfer torque through a compact, durable gear pair?',
     libraryRefs: ['gear-train', 'shaft-design', 'bearing-loads'],
-    ui: {
-      activityDates: ['2026-08-01', '2026-08-02', '2026-08-05'],
-    },
+    activityDates: ['2026-08-01', '2026-08-02', '2026-08-05'],
     sections: [
       {
         id: 'offline-section-1',
@@ -204,9 +199,7 @@ const FALLBACK_MACHINES = [
     progress: 18,
     question: 'How do we keep the deck stiff while staying light and easy to tow?',
     libraryRefs: ['trailer-frame', 'coupler', 'load-paths'],
-    ui: {
-      activityDates: ['2026-08-02', '2026-08-06'],
-    },
+    activityDates: ['2026-08-02', '2026-08-06'],
     sections: [
       {
         id: 'offline-section-5',
@@ -542,6 +535,7 @@ export function useNotebookWorkspace() {
       progress: 0,
       question: 'Start by writing a machine question.',
       libraryRefs: [],
+      activityDates: [],
       sections: [
         {
           id: `section-${Date.now()}`,
@@ -588,7 +582,7 @@ export function useNotebookWorkspace() {
     targetSection.content = nextContent
     targetSection.metadata = nextMetadata
 
-    if (supabase && targetSection.id) {
+    if (supabase && targetMachine.id && !String(targetMachine.id).startsWith('offline-') && targetSection.id) {
       const { error } = await supabase
         .from('machine_sections')
         .update({
@@ -607,6 +601,39 @@ export function useNotebookWorkspace() {
     }
 
     return targetSection
+  }
+
+  const appendTextToCurrentNotebook = async (text) => {
+    const targetMachine = selectedMachine.value
+    if (!targetMachine?.id) {
+      return { ok: false, message: 'No notebook selected.' }
+    }
+
+    const targetSection = targetMachine.sections?.[0]
+    if (!targetSection) {
+      return { ok: false, message: 'This notebook has no sections yet.' }
+    }
+
+    const existingContent = targetSection.content
+    let nextContent
+
+    if (Array.isArray(existingContent)) {
+      nextContent = [...existingContent, text]
+    } else if (typeof existingContent === 'string' && existingContent.trim()) {
+      nextContent = [existingContent, text]
+    } else if (existingContent && typeof existingContent === 'object') {
+      nextContent = [JSON.stringify(existingContent), text]
+    } else {
+      nextContent = [text]
+    }
+
+    const updatedSection = await updateSectionContent(targetSection.sectionKey || targetSection.id, nextContent)
+
+    if (!updatedSection) {
+      return { ok: false, message: 'Unable to append to this notebook.' }
+    }
+
+    return { ok: true, message: `Added to ${updatedSection.title}.` }
   }
 
   const toggleTerminal = () => {
@@ -630,6 +657,39 @@ export function useNotebookWorkspace() {
     if (trimmed === '/clear') {
       history.value = []
       currentInput.value = ''
+      return
+    }
+
+    if (trimmed === '/help') {
+      const helpResponse = `<div>${commandList.join('<br />')}</div>`
+      history.value.push({ content: helpResponse })
+      currentInput.value = ''
+      nextTick(() => {
+        if (scrollArea.value) {
+          scrollArea.value.scrollTop = scrollArea.value.scrollHeight
+        }
+      })
+      return
+    }
+
+    if (trimmed.startsWith('/append') || trimmed.startsWith('/note')) {
+      const text = trimmed.replace(/^\/append|^\/note/i, '').trim()
+      if (!text) {
+        history.value.push({ content: '<div>Usage: /append your note here</div>' })
+      } else {
+        const result = await appendTextToCurrentNotebook(text)
+        history.value.push({
+          content: result.ok
+            ? `<div style="color:#9fbcae">${result.message}</div>`
+            : `<div>Unable to append to notebook: ${result.message}</div>`,
+        })
+      }
+      currentInput.value = ''
+      nextTick(() => {
+        if (scrollArea.value) {
+          scrollArea.value.scrollTop = scrollArea.value.scrollHeight
+        }
+      })
       return
     }
 

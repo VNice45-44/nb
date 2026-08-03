@@ -57,7 +57,7 @@
       </nav>
 
       <div class="rail-footer">
-        <p>Days worked</p>
+        <p>Activity grid</p>
         <div class="activity-calendar" aria-label="Notebook activity calendar">
           <div v-for="day in activityDays" :key="day.label" class="activity-day" :class="{ active: day.active }">
             <span>{{ day.label }}</span>
@@ -282,7 +282,7 @@
             type="text"
             autocomplete="off"
             spellcheck="false"
-            placeholder="/help"
+            placeholder="/append capture a note"
           />
         </form>
       </aside>
@@ -373,7 +373,7 @@ const activityDays = computed(() => {
   const today = new Date()
   const start = new Date(today.getFullYear(), today.getMonth(), 1)
   const days = []
-  const activityDates = selectedMachine.value?.activityDates || selectedMachine.value?.ui?.activityDates || []
+  const activityDates = selectedMachine.value?.activityDates || []
 
   for (let index = 0; index < 28; index += 1) {
     const current = new Date(start)

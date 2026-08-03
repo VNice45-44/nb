@@ -107,6 +107,7 @@ const normalizeMachine = (raw, index) => {
     progress: typeof ui.progress === 'number' ? ui.progress : 0,
     question: ui.question || raw.description || 'Capture the machine question here.',
     libraryRefs: Array.isArray(raw.library_refs) ? raw.library_refs : [],
+    activityDates: Array.isArray(ui.activityDates) ? ui.activityDates : [],
     sections: [],
     ui,
     raw,
@@ -124,6 +125,13 @@ const buildLibraryMap = (entries) => {
   return map
 }
 
+const normalizeActivityDates = (rows = []) => {
+  return rows
+    .map((row) => row?.activity_date || row?.date)
+    .filter(Boolean)
+    .map((value) => (typeof value === 'string' ? value.slice(0, 10) : value))
+}
+
 const FALLBACK_MACHINES = [
   {
     id: 'offline-machine-001',
@@ -135,6 +143,9 @@ const FALLBACK_MACHINES = [
     progress: 28,
     question: 'How do we transfer torque through a compact, durable gear pair?',
     libraryRefs: ['gear-train', 'shaft-design', 'bearing-loads'],
+    ui: {
+      activityDates: ['2026-08-01', '2026-08-02', '2026-08-05'],
+    },
     sections: [
       {
         id: 'offline-section-1',
@@ -193,6 +204,9 @@ const FALLBACK_MACHINES = [
     progress: 18,
     question: 'How do we keep the deck stiff while staying light and easy to tow?',
     libraryRefs: ['trailer-frame', 'coupler', 'load-paths'],
+    ui: {
+      activityDates: ['2026-08-02', '2026-08-06'],
+    },
     sections: [
       {
         id: 'offline-section-5',
@@ -358,6 +372,38 @@ export function useNotebookWorkspace() {
     }
   }
 
+  const recordMachineActivity = async (machineId) => {
+    if (!supabase || !machineId || String(machineId).startsWith('offline-')) {
+      return
+    }
+
+    const session = await initSupabaseAuth()
+    const ownerId = session?.user?.id
+
+    if (!ownerId) {
+      return
+    }
+
+    const activityDate = new Date().toISOString().slice(0, 10)
+
+    const { error } = await supabase
+      .from('machine_activity_days')
+      .upsert(
+        {
+          machine_id: machineId,
+          owner_id: ownerId,
+          activity_date: activityDate,
+          activity_kind: 'edit',
+          metadata: {},
+        },
+        { onConflict: 'machine_id,activity_date,activity_kind' },
+      )
+
+    if (error) {
+      console.warn('Unable to record notebook activity:', error)
+    }
+  }
+
   const loadWorkspace = async () => {
     try {
       if (!supabase) {
@@ -423,14 +469,24 @@ export function useNotebookWorkspace() {
 
       if (Array.isArray(machinesData)) {
         const machineIds = machinesData.map((machine) => machine.id)
-        const sectionsData = machineIds.length
-          ? await supabase
-              .from('machine_sections')
-              .select('*')
-              .in('machine_id', machineIds)
-              .order('sort_order', { ascending: true })
-          : { data: [] }
+        const [sectionsResult, activityResult] = await Promise.all([
+          machineIds.length
+            ? supabase
+                .from('machine_sections')
+                .select('*')
+                .in('machine_id', machineIds)
+                .order('sort_order', { ascending: true })
+            : Promise.resolve({ data: [] }),
+          machineIds.length
+            ? supabase
+                .from('machine_activity_days')
+                .select('machine_id, activity_date')
+                .in('machine_id', machineIds)
+                .order('activity_date', { ascending: true })
+            : Promise.resolve({ data: [] }),
+        ])
 
+        const sectionsData = sectionsResult
         const machineSectionsByMachine = (sectionsData.data || []).reduce((acc, section) => {
           const normalized = normalizeMachineSection(section)
           const machineId = section.machine_id
@@ -439,9 +495,20 @@ export function useNotebookWorkspace() {
           return acc
         }, {})
 
+        const machineActivitiesByMachine = (activityResult.data || []).reduce((acc, row) => {
+          const machineId = row.machine_id
+          if (!acc[machineId]) acc[machineId] = []
+          acc[machineId].push(row)
+          return acc
+        }, {})
+
         machines.value = machinesData.map((machine, index) => {
           const normalizedMachine = normalizeMachine(machine, index)
           normalizedMachine.sections = machineSectionsByMachine[machine.id] || []
+          const activityDates = normalizeActivityDates(machineActivitiesByMachine[machine.id] || [])
+          normalizedMachine.activityDates = activityDates.length
+            ? activityDates
+            : normalizedMachine.activityDates
           return normalizedMachine
         })
 
@@ -490,6 +557,10 @@ export function useNotebookWorkspace() {
 
     machines.value.unshift(fallback)
     selectedId.value = fallback.id
+
+    if (supabase && fallback.id && !String(fallback.id).startsWith('offline-')) {
+      void recordMachineActivity(fallback.id)
+    }
   }
 
   const updateSectionContent = async (sectionKeyOrId, nextContent, metadata = {}) => {
@@ -529,6 +600,10 @@ export function useNotebookWorkspace() {
       if (error) {
         console.warn('Unable to persist section content:', error)
       }
+    }
+
+    if (supabase && targetMachine.id && !String(targetMachine.id).startsWith('offline-')) {
+      await recordMachineActivity(targetMachine.id)
     }
 
     return targetSection

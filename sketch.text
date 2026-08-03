@@ -1,137 +1,63 @@
-I'll drop the additional notes here.
+The new notes from the backend:
 
-✅ Implemented the required backend improvements (DDL)
+Notes to take to the frontend team (final handoff version)
 
-I applied the core structural changes you listed:
-public.machines — metadata fields
-
-    Added:
-        slug text (nullable)
-        summary text (nullable)
-        focus_area text with default 'discovery'
-        design_stage text with default 'concept'
-    Also added updated_at timestamptz default now() (so “last edited” tracking exists)
-
-public.machine_sections — richer section typing + metadata
-
-    Added:
-        metadata jsonb not null default '{}'
-        section_key text (stable ref for re-order/edit)
-    Expanded the display_type check constraint to include:
-        checklist, calculation, assumption, component, measurement, timeline
-        (keeping existing text, sketch)
-
-public.library_entries — engineering reuse + tags
-
-    Added:
-        entry_kind text (nullable)
-        tags text[] (nullable)
-
-New tables: machine_components and machine_component_links
-
-Created both tables with the requested columns, FK behavior, and indexes:
-public.machine_components
-
-    id uuid PK default extensions.uuid_generate_v4()
-    machine_id FK → machines(id) on delete cascade
-    owner_id FK → profiles(id) on delete cascade
-    parent_id self-FK nullable on delete set null
-    title, component_kind required
-    properties jsonb default '{}'
-    status text default 'concept'
-    sort_order integer default 0
-    created_at, updated_at
-
-Indexes on:
-
-    machine_id, parent_id, component_kind
-
-public.machine_component_links
-
-    id uuid PK
-    machine_id FK → machines(id) on delete cascade
-    source_component_id + target_component_id FKs → machine_components(id) on delete cascade
-    relation_kind text default 'connects'
-    metadata jsonb default '{}'
-    created_at
-    Added constraint: no self-links (source_component_id <> target_component_id)
-
-Indexes on:
-
-    machine_id, source_component_id, target_component_id
-
-RLS
-
-    Enabled RLS on both new tables.
-    Added baseline authenticated ownership policies:
-        machine_components: by owner_id = auth.uid()
-        machine_component_links: inferred ownership via source_component_id → machine_components.owner_id
+    Canonical render body: machine_sections.content
+    References contract (current): machine_sections.sections is an array of objects with:
+        raw.sections[i].reference OR raw.sections[i].items[j].reference
+    We seeded Option A: machine_sections.sections = [{ reference: section_key }] (backend can later refine slug mapping).
+    Persist edits: write user edits into machine_sections.content (not sections), unless a specific interaction requires updating references too.
 
 
-As it seems:
+Notes/changes for the frontend team (backend-backed calendar)
+1) New source of truth for notebook activity
 
-What’s still “not code” but must be reflected in UI payloads
+The frontend should switch from:
 
-These notes are already satisfied structurally (no new tables needed), but you’ll want to align your frontend JSON usage:
+    machines.ui.activityDates (demo/derived)
 
-    machines.ui should carry:
-        question, summary, status_label, priority, last_reviewed_at
-    machine_sections.content stays flexible payload (now with richer metadata + expanded display_type)
-    assets.metadata can already store trace fields (section_id, component_id, source_kind) since assets.metadata is already a jsonb column.
+to:
 
+    machine_activity_days rows filtered by machine_id (and implicitly by RLS via owner_id).
 
+2) Suggested API contract for UI
 
+The UI needs “a list of active dates”. So backend can return either:
 
+    a list of dates: [ '2026-08-01', '2026-08-02', ... ]
+    or rows from which the UI derives dates.
 
+Given the SQL shape, easiest is: query distinct activity_date for the notebook.
+3) Active day definition
 
-Notes to take to the frontend (after we persist edits)
+A day is active if there is at least one row where:
 
-When the frontend is rebuilt/adjusted, tell the team:
+    machine_id = selectedMachineId
+    activity_kind = 'edit' (for the first pass)
+    and activity_date falls within the displayed window (e.g. last 28 days)
 
-    Canonical write target: edits must be persisted to machine_sections.content (not machine_sections.sections).
-    Render source: display should come from machine_sections.content only.
-    Reconciliation key: use machine_sections.section_key to match sections across refreshes/edits.
-    References extraction plan:
-        Today: references may still be derived from raw.sections if that’s already implemented.
-        Next: migrate extraction to references embedded in raw.content (so sections can become legacy and eventually removable).
-    Don’t rely on sections as state: treat machine_sections.sections as fallback only until extraction is migrated.
+4) Write behavior to implement next (edits -> upsert)
 
+On any meaningful notebook edit, insert/upsert today as:
 
+    activity_kind = 'edit'
+    activity_date = current_date
+    machine_id + owner_id set from the edit context (owner is the signed-in user)
 
+Your backend write should do an upsert respecting the unique constraint:
 
-Canonical body = machine_sections.content
+    (machine_id, activity_date, activity_kind)
 
-    Render from content for all display_types.
+5) Migration order update
 
-machine_sections.sections is reference/fallback
+Frontend migration order becomes:
 
-    Today: reference extraction can continue to use sections.
-    If extraction currently expects sections.items[].reference, it will now work because we will seed it.
+    Read calendar from machine_activity_days (keep layout logic the same)
+    Later, implement write-updates from notebook edits
 
-Reconciliation / matching
+6) RLS implication for frontend
 
-    Use machine_sections.section_key to match the same logical section across loads/edits.
+Because RLS enforces owner_id = auth.uid(), the frontend should only see activities for notebooks that belong to the signed-in user (consistent with your existing ownership model). No special handling beyond filtering by machine_id.
+Cohesion note (no changes needed on section-related frontend work)
 
-Write path (edits)
-
-    Persist user edits to machine_sections.content (not sections), unless a specific UI interaction needs a sections-side update too.
-
-Migration plan (optional)
-
-    After frontend supports references from content, you can gradually stop relying on sections (eventually deprecate it).
-
-
-Also, assist me to look for what normalizeSectionContent(raw.content) outputs and what raw.sections reference extraction code expects 
-(exact path like raw.sections.items[i].reference vs raw.sections[i].items...), 
-So that on the backend, we can lock the exact sections JSON shape build the precise seed SQL to populate it.
-
-
-
-
-
-
-
-
-
-
-
+No further RLS/policy changes were made for your section persistence work in this step.

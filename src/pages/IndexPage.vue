@@ -57,11 +57,13 @@
       </nav>
 
       <div class="rail-footer">
-        <p>Notebook growth</p>
-        <div class="growth-meter">
-          <span :style="{ width: selectedMachine.progress + '%' }"></span>
+        <p>Days worked</p>
+        <div class="activity-calendar" aria-label="Notebook activity calendar">
+          <div v-for="day in activityDays" :key="day.label" class="activity-day" :class="{ active: day.active }">
+            <span>{{ day.label }}</span>
+          </div>
         </div>
-        <small>{{ selectedMachine.progress }}% mapped, still messy</small>
+        <small>{{ activeActivityCount }} active days in this notebook</small>
       </div>
     </aside>
 
@@ -122,37 +124,64 @@
               class="note-section"
               :class="section.kind"
             >
-              <header>
-                <q-icon :name="section.icon" />
-               <div>
-                 <h3>{{ section.title }}</h3>
-                 <p v-if="section.displayType && section.displayType !== 'text'" class="section-kind">
-                   {{ section.displayType }}
-                 </p>
+             <header class="section-heading">
+               <div class="section-title-wrap">
+                 <q-icon :name="section.icon" />
+                 <div>
+                   <h3>{{ section.title }}</h3>
+                   <p v-if="section.displayType && section.displayType !== 'text'" class="section-kind">
+                     {{ section.displayType }}
+                   </p>
+                 </div>
+               </div>
+
+               <div class="section-actions">
+                 <button
+                   v-if="editingSectionKey !== (section.sectionKey || section.id)"
+                   type="button"
+                   class="section-action-btn"
+                   @click="beginSectionEdit(section)"
+                 >
+                   Edit
+                 </button>
+                 <template v-else>
+                   <button type="button" class="section-action-btn secondary" @click="cancelSectionEdit">
+                     Cancel
+                   </button>
+                   <button type="button" class="section-action-btn primary" @click="saveSectionEdit(section)">
+                     Save
+                   </button>
+                 </template>
                </div>
              </header>
 
-             <div v-if="section.displayType === 'sketch'" class="sketch-pad">
-               <div class="boom"></div>
-               <div class="arm"></div>
-               <div class="bucket"></div>
-               <div class="track"></div>
-               <p>{{ section.content }}</p>
+             <div v-if="editingSectionKey === (section.sectionKey || section.id)" class="section-editor">
+               <textarea v-model="editingDraft" rows="8"></textarea>
              </div>
 
-             <ul v-else-if="Array.isArray(section.content)" class="note-list">
-               <li v-for="(item, index) in section.content" :key="`${section.sectionKey || section.id}-${index}`">
-                 <span v-if="typeof item === 'string'">{{ item }}</span>
-                 <span v-else-if="item?.text">{{ item.text }}</span>
-                 <span v-else>{{ JSON.stringify(item) }}</span>
-               </li>
-             </ul>
+             <div v-else>
+               <div v-if="section.displayType === 'sketch'" class="sketch-pad">
+                 <div class="boom"></div>
+                 <div class="arm"></div>
+                 <div class="bucket"></div>
+                 <div class="track"></div>
+                 <p>{{ section.content }}</p>
+               </div>
 
-             <div v-else-if="section.content && typeof section.content === 'object'" class="structured-payload">
-               <pre>{{ JSON.stringify(section.content, null, 2) }}</pre>
-              </div>
+               <ul v-else-if="Array.isArray(section.content)" class="note-list">
+                 <li v-for="(item, index) in section.content" :key="`${section.sectionKey || section.id}-${index}`">
+                   <span v-if="typeof item === 'string'">{{ item }}</span>
+                   <span v-else-if="item?.text">{{ item.text }}</span>
+                   <span v-else>{{ JSON.stringify(item) }}</span>
+                 </li>
+               </ul>
 
-             <p v-else>{{ section.content }}</p>
+               <div v-else-if="section.content && typeof section.content === 'object'" class="structured-payload">
+                 <pre>{{ JSON.stringify(section.content, null, 2) }}</pre>
+               </div>
+
+               <p v-else>{{ section.content }}</p>
+             </div>
 
              <div v-if="section.metadata && Object.keys(section.metadata).length" class="section-metadata">
                <span v-if="section.metadata.status" class="meta-pill">{{ section.metadata.status }}</span>
@@ -262,7 +291,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotebookWorkspace } from 'src/composables/useNotebookWorkspace'
 import { useSupabaseAuth } from 'src/composables/useSupabaseAuth'
@@ -291,8 +320,72 @@ const {
   activeLibrary,
   openLibrary,
   createEntry,
+  updateSectionContent,
   toggleTerminal,
   history,
   execute,
 } = useNotebookWorkspace()
+
+const editingSectionKey = ref('')
+const editingDraft = ref('')
+
+const serializeSectionContent = (content) => {
+  if (Array.isArray(content) || (content && typeof content === 'object')) {
+    return JSON.stringify(content, null, 2)
+  }
+
+  return typeof content === 'string' ? content : ''
+}
+
+const beginSectionEdit = (section) => {
+  editingSectionKey.value = section.sectionKey || section.id
+  editingDraft.value = serializeSectionContent(section.content)
+}
+
+const cancelSectionEdit = () => {
+  editingSectionKey.value = ''
+  editingDraft.value = ''
+}
+
+const saveSectionEdit = async (section) => {
+  const sectionKey = section.sectionKey || section.id
+  let nextContent = editingDraft.value.trim()
+
+  if (!nextContent) {
+    nextContent = ''
+  } else {
+    try {
+      const parsedValue = JSON.parse(nextContent)
+      if (Array.isArray(parsedValue) || (parsedValue && typeof parsedValue === 'object')) {
+        nextContent = parsedValue
+      }
+    } catch {
+      nextContent = editingDraft.value
+    }
+  }
+
+  await updateSectionContent(sectionKey, nextContent)
+  editingSectionKey.value = ''
+  editingDraft.value = ''
+}
+
+const activityDays = computed(() => {
+  const today = new Date()
+  const start = new Date(today.getFullYear(), today.getMonth(), 1)
+  const days = []
+  const activityDates = selectedMachine.value?.activityDates || selectedMachine.value?.ui?.activityDates || []
+
+  for (let index = 0; index < 28; index += 1) {
+    const current = new Date(start)
+    current.setDate(start.getDate() + index)
+    const label = current.getDate().toString()
+    const active = activityDates.includes(current.toISOString().slice(0, 10))
+
+    days.push({ label, active })
+  }
+
+  return days
+})
+
+const activeActivityCount = computed(() => activityDays.value.filter((day) => day.active).length)
 </script>

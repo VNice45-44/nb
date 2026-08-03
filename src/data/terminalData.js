@@ -7,6 +7,10 @@ export const commandList = [
   { command: '/simulations', description: 'Simulation sandbox index' },
   { command: '/library', description: 'Current curiosities and reading list' },
   { command: '/contact', description: 'Communication handshake' },
+  { command: '/append', description: 'Append a note to the active notebook' },
+  { command: '/tag', description: 'Attach a tag to the active notebook' },
+  { command: '/section', description: 'Create a new notebook section' },
+  { command: '/task', description: 'Add a checklist task to the active notebook' },
   { command: '/clear', description: 'Flush terminal output buffer' },
 ]
 
@@ -91,5 +95,17 @@ export const responses = {
   `,
   '/contact': `
     <div>Run <strong style="color: #31ccec">sudo consult zinja</strong> to initiate handshake.</div>
+  `,
+  '/append': `
+    <div>Use <strong style="color: #31ccec">/append</strong> followed by text to add a note to the current notebook.</div>
+  `,
+  '/tag': `
+    <div>Tagging is planned for the next backend pass. The terminal will eventually attach tags to the active notebook metadata.</div>
+  `,
+  '/section': `
+    <div>Section creation is planned for the next backend pass. The terminal will eventually create a new notebook section.</div>
+  `,
+  '/task': `
+    <div>Checklist task capture is planned for the next backend pass. The terminal will eventually add structured tasks.</div>
   `,
 }

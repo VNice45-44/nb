@@ -61,3 +61,67 @@ Because RLS enforces owner_id = auth.uid(), the frontend should only see activit
 Cohesion note (no changes needed on section-related frontend work)
 
 No further RLS/policy changes were made for your section persistence work in this step.
+
+Terminal utility roadmap notes for backend
+
+1) Terminal command model
+
+The terminal should be treated as a lightweight notebook input layer for a single user.
+For now, commands should target the currently selected notebook and its first/active section.
+The backend should keep the command surface simple and predictable:
+
+    /append <text>        -> append a note entry to the active section
+    /tag <slug-or-label>  -> add a tag to the active notebook or section metadata
+    /section <title>      -> create a new section row under the active machine
+    /task <text>          -> create a checklist-style task entry
+
+2) Suggested data contract for /append
+
+The frontend currently expects machine_sections.content to be the canonical render body.
+For /append, the backend should preserve that contract by writing a content payload that the frontend can render as a list of note entries.
+Recommended shape for the first pass:
+
+    content = ['First observation', 'Second observation']
+
+If the section already contains a string, convert it to an array on write. If the section already contains an object payload, keep it as-is and append a string entry in a way that the frontend can still render safely.
+
+3) Suggested data contract for /tag
+
+Tags should not be stored as free-form text inside content. They should be stored in metadata.
+Recommended shape:
+
+    metadata.tags = ['design-review', 'gear-system']
+
+If the tag flow is notebook-wide rather than section-wide, move the same structure to machines.metadata.tags.
+
+4) Suggested data contract for /section
+
+Creating a section should insert a new machine_sections row with:
+
+    machine_id = active machine id
+    section_key = generated slug or UUID
+    title = supplied title or 'New section'
+    display_type = 'text'
+    content = []
+    metadata = { source: 'terminal', created_by: 'terminal' }
+
+5) Suggested data contract for /task
+
+Checklist tasks should be stored as structured content so the frontend can render them later as checklist items.
+Recommended shape for the first pass:
+
+    content = [{ text: 'Verify shaft spacing', done: false }]
+    metadata = { display_type: 'checklist', source: 'terminal' }
+
+6) Backend implementation order
+
+Recommended order:
+
+    a) /append first, because it uses the existing machine_sections.content contract.
+    b) /tag next, because it only requires metadata updates.
+    c) /section next, because it adds a new section row.
+    d) /task last, because it introduces structured checklist payloads.
+
+7) UX note for the terminal
+
+The frontend should keep the terminal lightweight and predictive. Suggestions should appear as the user types, and the backend should not require a large schema expansion before the first commands are usable.

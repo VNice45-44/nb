@@ -814,13 +814,19 @@ body {
 }
 
 .command-row {
-  min-height: 46px;
-  padding: 0 16px;
+  padding: 10px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(237, 233, 220, 0.1);
+  color: #9fbcae;
+}
+
+.command-input-row {
+  min-height: 26px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-top: 1px solid rgba(237, 233, 220, 0.1);
-  color: #9fbcae;
 }
 
 .command-row input {
@@ -831,6 +837,34 @@ body {
   background: transparent;
   color: #fff8df;
   font: inherit;
+}
+
+.terminal-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.terminal-suggestion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid rgba(217, 197, 111, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #dce7d9;
+  font: inherit;
+  cursor: pointer;
+}
+
+.terminal-suggestion strong {
+  color: #d9c56f;
+}
+
+.terminal-suggestion span {
+  font-size: 0.74rem;
+  color: #aeb6aa;
 }
 
 ::-webkit-scrollbar {

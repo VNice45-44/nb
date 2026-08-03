@@ -661,8 +661,10 @@ export function useNotebookWorkspace() {
     }
 
     if (trimmed === '/help') {
-      const helpResponse = `<div>${commandList.join('<br />')}</div>`
-      history.value.push({ content: helpResponse })
+      const helpResponse = commandList
+        .map(({ command, description }) => `<div><strong>${command}</strong> — ${description}</div>`)
+        .join('')
+      history.value.push({ content: `<div>${helpResponse}</div>` })
       currentInput.value = ''
       nextTick(() => {
         if (scrollArea.value) {
@@ -684,6 +686,54 @@ export function useNotebookWorkspace() {
             : `<div>Unable to append to notebook: ${result.message}</div>`,
         })
       }
+      currentInput.value = ''
+      nextTick(() => {
+        if (scrollArea.value) {
+          scrollArea.value.scrollTop = scrollArea.value.scrollHeight
+        }
+      })
+      return
+    }
+
+    if (trimmed.startsWith('/tag')) {
+      const tag = trimmed.replace(/^\/tag/i, '').trim()
+      history.value.push({
+        content: tag
+          ? `<div>Tag planned for backend: <strong>${tag}</strong></div>`
+          : '<div>Usage: /tag design-review</div>',
+      })
+      currentInput.value = ''
+      nextTick(() => {
+        if (scrollArea.value) {
+          scrollArea.value.scrollTop = scrollArea.value.scrollHeight
+        }
+      })
+      return
+    }
+
+    if (trimmed.startsWith('/section')) {
+      const sectionTitle = trimmed.replace(/^\/section/i, '').trim()
+      history.value.push({
+        content: sectionTitle
+          ? `<div>Section planned for backend: <strong>${sectionTitle}</strong></div>`
+          : '<div>Usage: /section Design assumptions</div>',
+      })
+      currentInput.value = ''
+      nextTick(() => {
+        if (scrollArea.value) {
+          scrollArea.value.scrollTop = scrollArea.value.scrollHeight
+        }
+      })
+      return
+    }
+
+    if (trimmed.startsWith('/task')) {
+      const taskText = trimmed.replace(/^\/task/i, '').trim()
+      history.value.push({
+        content: taskText
+          ? `<div>Checklist task planned for backend: <strong>${taskText}</strong></div>`
+          : '<div>Usage: /task Verify shaft spacing</div>',
+      })
       currentInput.value = ''
       nextTick(() => {
         if (scrollArea.value) {

@@ -275,15 +275,30 @@
         </div>
 
         <form @submit.prevent="execute" class="command-row">
-          <span>&gt;</span>
-          <input
-            ref="cmdInput"
-            v-model="currentInput"
-            type="text"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="/append capture a note"
-          />
+          <div class="command-input-row">
+            <span>&gt;</span>
+            <input
+              ref="cmdInput"
+              v-model="currentInput"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="/append capture a note"
+            />
+          </div>
+
+          <div v-if="terminalSuggestions.length" class="terminal-suggestions">
+            <button
+              v-for="suggestion in terminalSuggestions"
+              :key="suggestion.command"
+              type="button"
+              class="terminal-suggestion"
+              @click="selectSuggestion(suggestion.command)"
+            >
+              <strong>{{ suggestion.command }}</strong>
+              <span>{{ suggestion.description }}</span>
+            </button>
+          </div>
         </form>
       </aside>
     </main>
@@ -295,6 +310,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotebookWorkspace } from 'src/composables/useNotebookWorkspace'
 import { useSupabaseAuth } from 'src/composables/useSupabaseAuth'
+import { commandList } from 'src/data/terminalData'
 import brandMark from 'src/assets/brand-mark.svg'
 
 const router = useRouter()
@@ -367,6 +383,21 @@ const saveSectionEdit = async (section) => {
   await updateSectionContent(sectionKey, nextContent)
   editingSectionKey.value = ''
   editingDraft.value = ''
+}
+
+const terminalSuggestions = computed(() => {
+  const rawInput = currentInput.value.trim().toLowerCase()
+  if (!rawInput) {
+    return []
+  }
+
+  return commandList
+    .filter(({ command }) => command.startsWith(rawInput) || command.includes(rawInput))
+    .slice(0, 5)
+})
+
+const selectSuggestion = (command) => {
+  currentInput.value = command
 }
 
 const activityDays = computed(() => {
